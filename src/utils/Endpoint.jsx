@@ -1,0 +1,9 @@
+export const domain = process.env.NODE_ENV === 'production' ? "http://irent-services.com" : "http://localhost:7000";
+
+export const auth = `${domain}/auth/api`;
+
+export const property_url = `${domain}/property/api`
+
+export const favorites_ul = `${domain}/favorites/api`
+
+export const viewing_url = `${domain}/viewing/api`
