@@ -1,12 +1,27 @@
 import React from 'react'
 import Viewing from './Viewing'
+import ErrorBoundary from '../ErrorBoundary'
+import Layout from '../layout/Layout'
+import Requests from './Requests'
 
-const Viewings = () => {
+export const AllViewings = () => {
     return (
-        <div className=''>
-            <Viewing />
-        </div>
+        <ErrorBoundary>
+            <Layout>
+                <Viewing />
+            </Layout>
+        </ErrorBoundary>
     )
 }
 
-export default Viewings
+export const ViewingRequests = () => {
+    return (
+        <ErrorBoundary>
+            <Layout>
+                <Requests />
+            </Layout>
+        </ErrorBoundary>
+    )
+}
+
+

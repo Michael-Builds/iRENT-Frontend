@@ -6,7 +6,7 @@ export const Modal = ({ isOpen, closeModal, children, title }) => {
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-            <div className="relative bg-white w-full max-w-lg mx-auto p-6 rounded-md shadow-lg">
+            <div className="relative bg-white max-sm:w-[95%] w-full max-w-lg mx-auto p-6 rounded-md shadow-lg">
                 <div className="flex justify-between items-center mb-4">
                     <h2 className="text-lg font-medium">{title}</h2>
                     <IoMdClose

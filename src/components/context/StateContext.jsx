@@ -1,8 +1,8 @@
-import axios from "axios";
-import { createContext, useContext, useMemo, useState, useEffect } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
-import { auth, property_url, favorites_ul, viewing_url } from "../../utils/Endpoint";
 import { useNavigate } from "react-router-dom";
+import api from "../../utils/api";
+import { auth, favorites_ul, property_url, viewing_url } from "../../utils/Endpoint";
 
 export const AuthContext = createContext();
 
@@ -11,187 +11,182 @@ export const MainContextProvider = ({ children }) => {
     const [modalType, setModalType] = useState(null);
     const [loading, setLoading] = useState(false);
     const [currentUser, setCurrentUser] = useState(JSON.parse(localStorage.getItem("user")) || null);
-    const [token, setToken] = useState(null);
+    const [token, setToken] = useState(localStorage.getItem('accessToken') || null);
     const [userInfo, setUserInfo] = useState(null);
+    const [users, setUsers] = useState([]);
     const [step, setStep] = useState(0);
     const [selectedTown, setSelectedTown] = useState(null);
     const [selectedPrice, setSelectedPrice] = useState(null);
     const [selectedLocation, setSelectedLocation] = useState(null);
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [favorites, setFavorites] = useState([]);
-    const navigate = useNavigate();
     const [selectedListing, setSelectedListing] = useState(null);
-    const [properties, setProperties] = useState([])
+    const [properties, setProperties] = useState([]);
     const [viewings, setViewings] = useState([]);
+    const [loadingId, setLoadingId] = useState(null);
+    const [ownerViewings, setOwnerViewings] = useState([]);
+    const navigate = useNavigate();
 
-    // Create Viewing Request
-    const createViewingRequest = async (propertyId, viewingType, preferredDate) => {
+
+    // New function to fetch all users (admin-only)
+    const fetchAllUsers = async () => {
         try {
             setLoading(true);
-            const res = await axios.post(`${viewing_url}/create-viewing`, {
-                propertyId,
-                viewingType,
-                preferredDate
-            }, {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem('accessToken')}`
-                }
-            });
+            const res = await api.get(`${auth}/all-users`);
+            setUsers(res.data.users);
 
-            toast.success("Viewing request created!", { duration: 4000, position: "top-right" });
-            setViewings((prev) => [...prev, res.data.viewing]);
         } catch (error) {
-            console.error("Error creating viewing request:", error);
-            toast.error("Error creating viewing request!", { duration: 4000, position: "top-right" });
+            console.error("Error fetching users:", error);
         } finally {
             setLoading(false);
         }
     };
 
-    // Fetch all user's viewing requests
+    // Function to create viewing request
+    const createViewingRequest = async (propertyId, viewingType, preferredDate) => {
+        try {
+            setLoading(true);
+            const res = await api.post(`${viewing_url}/create-viewing`, {
+                propertyId,
+                viewingType,
+                preferredDate
+            });
+
+            toast.success("Viewing request created!", { duration: 4000 });
+            setViewings(prev => [...prev, res.data.viewing]);
+            console.log("Viewing request", res.data.viewing)
+            return res.data.viewing
+        } catch (error) {
+            toast.error("Error creating viewing request.", { duration: 4000 });
+            console.error(error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Function to fetch all user's viewing requests
     const fetchViewings = async () => {
         try {
-            const res = await axios.get(`${viewing_url}/get-viewings`, {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-                },
-            });
+            const res = await api.get(`${viewing_url}/get-viewings`);
             setViewings(res.data.viewings);
         } catch (error) {
             console.error("Error fetching viewings:", error);
         }
     };
 
-    useEffect(() => {
-        fetchViewings();
-    }, []);
 
-
-    const refreshToken = async () => {
+    // New function to fetch owner's viewing requests
+    const fetchOwnerViewings = async () => {
         try {
-            const refresh_token = localStorage.getItem('refreshToken');
-            const res = await axios.post(`${auth}/refresh-token`, { refresh_token });
-            localStorage.setItem('accessToken', res.data.accessToken);
-            setToken(res.data.accessToken);
+            setLoading(true);
+            const res = await api.get(`${viewing_url}/viewings/owner-requests`);
+            setOwnerViewings(res.data.viewings);
         } catch (error) {
-            console.error("Token refresh failed:", error);
-            logout();
+            console.error("Error fetching owner's viewings:", error);
+        } finally {
+            setLoading(false);
         }
     };
 
-    // Hook to run every 20 minutes and refresh the token
-    useEffect(() => {
-        if (currentUser && token) {
-            const interval = setInterval(() => {
-                refreshToken();
-            }, 12 * 60 * 60 * 1000);
 
-            return () => clearInterval(interval);
-        }
-    }, [currentUser, token]);
-
-    useEffect(() => {
-        const user = localStorage.getItem('user');
-        if (user) {
-            setCurrentUser(JSON.parse(user));
-        }
-        const accessToken = localStorage.getItem('accessToken');
-        if (accessToken) {
-            setToken(accessToken);
-        }
-    }, []);
-
-
+    // Fetch user information
     const fetchUserInfo = async () => {
         setLoading(true);
         try {
-            const res = await axios.get(`${auth}/user-info`, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
+            const res = await api.get(`${auth}/user-info`);
             setUserInfo(res.data.user);
         } catch (error) {
-            console.log("Error fetching user info:", error);
+            console.error("Error fetching user info:", error);
         } finally {
             setLoading(false);
         }
     };
 
-
-    const login = async (inputs) => {
+    // Updated login function to handle errors
+    const login = async (inputs, rememberMe) => {
         try {
             setLoading(true);
-            const res = await axios.post(`${auth}/login`, inputs);
+            const res = await api.post(`${auth}/login`, inputs);
+
+            // If login is successful
             setCurrentUser(res.data.user);
             setToken(res.data.accessToken);
+
+            // Store user and token
             localStorage.setItem('accessToken', res.data.accessToken);
             localStorage.setItem("user", JSON.stringify(res.data.user));
+
+            if (rememberMe) {
+                localStorage.setItem("rememberMe", "true");
+            } else {
+                localStorage.removeItem("rememberMe");
+            }
+
             await fetchUserInfo();
+            return true;
         } catch (error) {
             console.error("Login error:", error);
+
+            // Handle different types of errors
+            if (error.response) {
+                // Server responded with a status code outside 2xx range
+                const message = error.response.data.message || "Invalid credentials. Please try again.";
+                throw new Error(message);
+            } else if (error.request) {
+                // Request made but no response received
+                throw new Error("Network error. Please check your connection.");
+            } else {
+                // Something else happened
+                throw new Error("An unexpected error occurred. Please try again.");
+            }
         } finally {
             setLoading(false);
         }
     };
 
-
+    // Function to fetch properties
     const fetchProperties = async () => {
         setLoading(true);
         try {
-            const res = await axios.get(`${property_url}/get-properties`)
+            const res = await api.get(`${property_url}/get-properties`);
             setProperties(res.data.properties);
         } catch (error) {
-            console.error(error.message)
+            console.error("Error fetching properties:", error);
         } finally {
             setLoading(false);
         }
-    }
-
+    };
 
     useEffect(() => {
         fetchProperties();
     }, []);
 
+    // Function to log out the user
     const logout = async () => {
         try {
-            let token = localStorage.getItem('accessToken');
-            if (!token) {
-                console.warn("No access token found, refreshing token.");
-                await refreshToken();
-                token = localStorage.getItem('accessToken');
-            }
-
-            await axios.get(`${auth}/logout`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
+            await api.get(`${auth}/logout`);
             setCurrentUser(null);
             setToken(null);
             localStorage.removeItem("user");
             localStorage.removeItem("accessToken");
             toast.success("Logged out successfully!");
+            navigate("/")
         } catch (error) {
-            console.log("Logout error:", error);
+            console.error("Logout error:", error);
             toast.error("Error logging out.");
         }
     };
 
+
     // Function to toggle favorites
     const toggleFavorite = async (propertyId) => {
         try {
-            const res = await axios.post(`${favorites_ul}/toggle-favorites`, { propertyId }, {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-                },
-            });
-            // Update the state based on whether it's added or removed
+            const res = await api.post(`${favorites_ul}/toggle-favorites`, { propertyId });
             if (res.data.message.includes("added")) {
-                // Property added to favorites, update state
-                setFavorites((prev) => [...prev, propertyId]);
+                setFavorites(prev => [...prev, propertyId]);
                 toast.success("Added to favorites");
             } else {
-                // Property removed from favorites, update state
-                setFavorites((prev) => prev.filter((id) => id !== propertyId));
+                setFavorites(prev => prev.filter(id => id !== propertyId));
                 toast.success("Removed from favorites");
             }
         } catch (error) {
@@ -200,25 +195,18 @@ export const MainContextProvider = ({ children }) => {
         }
     };
 
-    // Fetch all user's favorite properties
+
+    // Function to fetch favorites
     const fetchFavorites = async () => {
         try {
-            const res = await axios.get(`${favorites_ul}/get-favorites`, {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-                },
-            });
-            // Map the result to an array of property IDs
-            const favoriteIds = res.data.favorites.map((fav) => fav.property._id);
+            const res = await api.get(`${favorites_ul}/get-favorites`);
+            const favoriteIds = res.data.favorites.map(fav => fav.property._id);
             setFavorites(favoriteIds);
         } catch (error) {
             console.error("Error fetching favorites:", error);
         }
     };
 
-    useEffect(() => {
-        fetchFavorites();
-    }, []);
 
     const openModal = (type) => {
         setModalType(type);
@@ -229,11 +217,10 @@ export const MainContextProvider = ({ children }) => {
         setModalType(null);
         setIsOpen(false);
     };
-    
+
 
     useEffect(() => {
-        localStorage.setItem("user", JSON.stringify(currentUser));
-        if (!currentUser) return;
+        if (currentUser) localStorage.setItem("user", JSON.stringify(currentUser));
     }, [currentUser]);
 
     const providerValue = useMemo(() => ({
@@ -270,8 +257,18 @@ export const MainContextProvider = ({ children }) => {
         createViewingRequest,
         fetchViewings,
         viewings,
+        token,
+        loadingId,
+        setLoadingId,
+        fetchOwnerViewings,
+        ownerViewings,
+        users,
+        fetchAllUsers
     }), [
         isOpen,
+        users,
+        loadingId,
+        token,
         modalType,
         loading,
         currentUser,
@@ -285,7 +282,8 @@ export const MainContextProvider = ({ children }) => {
         navigate,
         selectedListing,
         properties,
-        viewings
+        viewings,
+        ownerViewings
     ]);
 
     return <AuthContext.Provider value={providerValue}>{children}</AuthContext.Provider>;

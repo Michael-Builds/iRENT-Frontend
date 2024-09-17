@@ -8,7 +8,7 @@ import { DatePicker } from '../inputs/DatePicker';
 const ViewForm = ({ propertyId }) => {
     const [viewingOption, setViewingOption] = useState(null);
     const [preferredDate, setPreferredDate] = useState('');
-    const { closeModal, loading, setLoading, currentUser, openModal, createViewingRequest } = useMainState();
+    const { closeModal, loading, setLoading, currentUser, openModal, createViewingRequest, selectedListing } = useMainState();
 
     // Options for in-person or remote viewing
     const options = [

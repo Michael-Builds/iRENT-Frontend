@@ -1,14 +1,16 @@
 import React from 'react'
-import Landing from './Landing'
 import ErrorBoundary from '../ErrorBoundary'
+import DetailsPage from './Details'
 import Layout from '../layout/Layout'
 
-export const Home = () => {
+const Details = () => {
     return (
         <ErrorBoundary>
             <Layout>
-                <Landing />
+                <DetailsPage />
             </Layout>
         </ErrorBoundary>
     )
 }
+
+export default Details

@@ -3,13 +3,16 @@ import { RiArrowDownSLine } from "react-icons/ri";
 import { useMainState } from "./context/StateContext";
 import DefaultAvatar from "../assets/images/avatar.png";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faList, faEye, faUserPlus, faUserMinus, faBell, faSignOutAlt, faSignInAlt, faUser } from '@fortawesome/free-solid-svg-icons';
-
+import {
+  faPlus, faList, faEye,
+  faUserPlus, faUserMinus,
+  faBell, faSignOutAlt,
+  faSignInAlt, faUser, faHeart
+} from '@fortawesome/free-solid-svg-icons';
 
 export const Menu = () => {
   const { openModal, currentUser, logout, navigate } = useMainState();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
 
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
 
@@ -17,120 +20,96 @@ export const Menu = () => {
   const userName = currentUser ? `${currentUser.firstname} ${currentUser.lastname}` : "User Name";
   const userRole = currentUser?.role || "Role";
 
-  const handleLogout = () => {
-    logout();
-    setIsDropdownOpen(false);
-  };
+  // Handlers for various actions
+  const handleLogout = () => { logout(); setIsDropdownOpen(false); };
+  const handleLogin = () => { openModal("LOGIN"); setIsDropdownOpen(false); };
+  const handleSignup = () => { openModal("SIGNUP"); setIsDropdownOpen(false); };
+  const handleNavigate = (route) => { navigate(route); setIsDropdownOpen(false); };
 
-  const handleLogin = () => {
-    openModal("LOGIN");
-    setIsDropdownOpen(false);
-  };
+  const handleAddLandlord = () => { openModal("ADD_LANDLORD"); setIsDropdownOpen(false); };
 
-  const handleSignup = () => {
-    openModal("SIGNUP");
-    setIsDropdownOpen(false);
-  };
-
-  const handleViewing = () => {
-    navigate("/viewing")
-    setIsDropdownOpen(false);
-  }
 
   const handleAddProperty = () => {
     openModal("ADD_PROPERTY");
     setIsDropdownOpen(false);
   }
+  // Common menu items for all users
+  const renderCommonMenuItems = () => (
+    <>
+      <li className="p-2 hover:bg-gray-100 cursor-pointer" onClick={() => handleNavigate("/viewing")}>
+        <FontAwesomeIcon icon={faEye} className="mr-4 text-gray-500" /> My Viewing
+      </li>
+      <li className="p-2 hover:bg-gray-100 cursor-pointer" onClick={() => handleNavigate("/favorites")}>
+        <FontAwesomeIcon icon={faHeart} className="mr-4 text-gray-500" /> Favorites
+      </li>
+    </>
+  );
 
-  const handleMyProperties = () => {
-    navigate("/my-properties")
-    setIsDropdownOpen(false);
-  }
-
+  // Menu for admin role
   const renderAdminMenu = () => (
     <>
+      {renderCommonMenuItems()}
       <li className="p-2 hover:bg-gray-100 cursor-pointer" onClick={handleAddProperty}>
-        <FontAwesomeIcon icon={faPlus} className="mr-4 text-gray-500" />
-        Add Property
+        <FontAwesomeIcon icon={faPlus} className="mr-4 text-gray-500" /> Add Property
       </li>
-      <li className="p-2 hover:bg-gray-100 cursor-pointer" onClick={handleMyProperties}>
-        <FontAwesomeIcon icon={faList} className="mr-4 text-gray-500" />
-        My Properties
+      <li className="p-2 hover:bg-gray-100 cursor-pointer" onClick={() => handleNavigate("/my-properties")}>
+        <FontAwesomeIcon icon={faList} className="mr-4 text-gray-500" /> My Properties
       </li>
-      <li className="p-2 hover:bg-gray-100 cursor-pointer">
-        <FontAwesomeIcon icon={faUserPlus} className="mr-4 text-gray-500" />
-        Add Landlord
+      <li className="p-2 hover:bg-gray-100 cursor-pointer" onClick={handleAddLandlord}>
+        <FontAwesomeIcon icon={faUserPlus} className="mr-4 text-gray-500" /> User Role
       </li>
-      <li className="p-2 hover:bg-gray-100 cursor-pointer">
-        <FontAwesomeIcon icon={faEye} className="mr-4 text-gray-500" />
-        My Viewing
-      </li>
-      <li className="p-2 hover:bg-gray-100 cursor-pointer">
-        <FontAwesomeIcon icon={faUserMinus} className="mr-4 text-gray-500" />
-        Remove Landlord
-      </li>
-      <li className="p-2 hover:bg-gray-100 cursor-pointer">
-        <FontAwesomeIcon icon={faBell} className="mr-4 text-gray-500" />
-        Viewing Requests
+      <li className="p-2 hover:bg-gray-100 cursor-pointer" onClick={() => handleNavigate("/viewing-requests")}>
+        <FontAwesomeIcon icon={faBell} className="mr-4 text-gray-500" /> Viewing Requests
       </li>
       <li className="p-2 hover:bg-gray-100 cursor-pointer" onClick={handleLogout}>
-        <FontAwesomeIcon icon={faSignOutAlt} className="mr-4 text-gray-500" />
-        Logout
+        <FontAwesomeIcon icon={faSignOutAlt} className="mr-4 text-gray-500" /> Logout
       </li>
     </>
   );
 
-  const renderUserMenu = () => (
-    <>
-      <li className="p-2 hover:bg-gray-100 cursor-pointer" onClick={handleViewing}>
-        <FontAwesomeIcon icon={faEye} className="mr-4 text-gray-500" />
-        My Viewing
-      </li>
-      <li className="p-2 hover:bg-gray-100 cursor-pointer">
-        <FontAwesomeIcon icon={faBell} className="mr-4 text-gray-500" />
-        Notifications
-      </li>
-      <li className="p-2 hover:bg-gray-100 cursor-pointer" onClick={handleLogout}>
-        <FontAwesomeIcon icon={faSignOutAlt} className="mr-4 text-gray-500" />
-        Logout
-      </li>
-    </>
-  );
-
+  // Menu for landlord role
   const renderLandlordMenu = () => (
     <>
+      {renderCommonMenuItems()}
       <li className="p-2 hover:bg-gray-100 cursor-pointer" onClick={handleAddProperty}>
-        <FontAwesomeIcon icon={faPlus} className="mr-4 text-gray-500" />
-        Add Property
+        <FontAwesomeIcon icon={faPlus} className="mr-4 text-gray-500" /> Add Property
       </li>
-      <li className="p-2 hover:bg-gray-100 cursor-pointer" onClick={handleMyProperties}>
-        <FontAwesomeIcon icon={faList} className="mr-4 text-gray-500" />
-        My Properties
+      <li className="p-2 hover:bg-gray-100 cursor-pointer" onClick={() => handleNavigate("/my-properties")}>
+        <FontAwesomeIcon icon={faList} className="mr-4 text-gray-500" /> My Properties
       </li>
-      <li className="p-2 hover:bg-gray-100 cursor-pointer">
-        <FontAwesomeIcon icon={faBell} className="mr-4 text-gray-500" />
-        Viewing Requests
+      <li className="p-2 hover:bg-gray-100 cursor-pointer" onClick={() => handleNavigate("/viewing-requests")}>
+        <FontAwesomeIcon icon={faBell} className="mr-4 text-gray-500" /> Viewing Requests
       </li>
       <li className="p-2 hover:bg-gray-100 cursor-pointer" onClick={handleLogout}>
-        <FontAwesomeIcon icon={faSignOutAlt} className="mr-4 text-gray-500" />
-        Logout
+        <FontAwesomeIcon icon={faSignOutAlt} className="mr-4 text-gray-500" /> Logout
       </li>
     </>
   );
 
+  // Menu for user role
+  const renderUserMenu = () => (
+    <>
+      {renderCommonMenuItems()}
+      <li className="p-2 hover:bg-gray-100 cursor-pointer">
+        <FontAwesomeIcon icon={faBell} className="mr-4 text-gray-500" /> Notifications
+      </li>
+      <li className="p-2 hover:bg-gray-100 cursor-pointer" onClick={handleLogout}>
+        <FontAwesomeIcon icon={faSignOutAlt} className="mr-4 text-gray-500" /> Logout
+      </li>
+    </>
+  );
+
+  // Menu for non-authenticated users
   const renderAuthMenu = () => (
     <>
       <li className="p-2 hover:bg-gray-100 cursor-pointer" onClick={handleLogin}>
-        <FontAwesomeIcon icon={faSignInAlt} className="mr-4 text-gray-500" />
-        Login
+        <FontAwesomeIcon icon={faSignInAlt} className="mr-4 text-gray-500" /> Login
       </li>
       <li className="p-2 hover:bg-gray-100 cursor-pointer" onClick={handleSignup}>
-        <FontAwesomeIcon icon={faUser} className="mr-4 text-gray-500" />
-        Signup
+        <FontAwesomeIcon icon={faUser} className="mr-4 text-gray-500" /> Signup
       </li>
     </>
   );
-
 
   return (
     <div className="relative select-none">

@@ -1,14 +1,16 @@
 import React from 'react'
-import Landing from './Landing'
+import MyProperties from './MyProperties'
 import ErrorBoundary from '../ErrorBoundary'
 import Layout from '../layout/Layout'
 
-export const Home = () => {
+const Properties = () => {
     return (
         <ErrorBoundary>
             <Layout>
-                <Landing />
+                <MyProperties />
             </Layout>
         </ErrorBoundary>
     )
 }
+
+export default Properties

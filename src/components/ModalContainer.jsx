@@ -9,9 +9,10 @@ import { VerifyAccount } from "./home/VerifyAccount"
 import ViewForm from "./viewing/ViewForm"
 import AddProperty from "./property/AddProperty"
 import { SearchModalContent } from "./SearchFilter"
+import Landlord from "./landlords/Landlord"
 
 export const ModalContainer = () => {
-  const { modalType, closeModal, selectedListing  } = useMainState()
+  const { modalType, closeModal, selectedListing } = useMainState()
 
   if (!modalType) return null
 
@@ -33,6 +34,8 @@ export const ModalContainer = () => {
         return "Rquest for Viewing"
       case "ADD_PROPERTY":
         return "Add New Property"
+      case "ADD_LANDLORD":
+        return "Add a New Landlord"
       default:
         return ""
     }
@@ -46,8 +49,9 @@ export const ModalContainer = () => {
       {modalType === "FORGOT_PASSWORD" && <ForgotPasswordForm />}
       {modalType === "RESET_PASSWORD" && <ResetPasswordForm />}
       {modalType === "VERIFY_ACCOUNT" && <VerifyAccount />}
-      {modalType === "VIEWING" && <ViewForm propertyId={selectedListing}/>}
+      {modalType === "VIEWING" && <ViewForm propertyId={selectedListing} />}
       {modalType === "ADD_PROPERTY" && <AddProperty />}
+      {modalType === "ADD_LANDLORD" && <Landlord />}
     </Modal>
   )
 }

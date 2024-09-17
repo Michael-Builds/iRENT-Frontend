@@ -11,16 +11,19 @@ export const SearchFilter = () => {
       onClick={() => {
         openModal("SEARCH")
       }}
-      className="w-[28rem] text-md h-[2.6rem] justify-between rounded-full shadow-sm border border-gray-200 flex items-center p-2 cursor-pointer hover:shadow-lg transition-all duration-300 ease-in-out"
+      className="max-sm:border max-sm:hover:shadow-none max-sm:w-[12rem] max-sm:shadow-none w-[28rem] text-md h-[2.6rem] justify-between rounded-full shadow-sm border border-gray-200 flex items-center p-2 cursor-pointer hover:shadow-lg transition-all duration-300 ease-in-out"
     >
-      <span className="ml-5  text-gray-500 flex-1 text-center border-r border-gray-300 ">
+      <span className="ml-5 max-sm:hidden text-gray-500 flex-1 text-center border-r border-gray-300 ">
         Price
       </span>
-      <span className="ml-5 text-gray-500 flex-1 text-center border-r border-gray-300">
+      <span className="ml-5 max-sm:hidden text-gray-500 flex-1 text-center border-r border-gray-300">
         Location
       </span>
-      <span className="ml-5 text-gray-500 flex-1 text-center ">
+      <span className="ml-5 max-sm:hidden text-gray-500 flex-1 text-center ">
         Category
+      </span>
+      <span className="ml-5 max-sm:block hidden text-gray-500 flex-1 text-center ">
+        Search
       </span>
       <div className="bg-[#d2710a] flex p-1.5 items-center justify-center rounded-full">
         <CiSearch size={20} className="text-white " />
@@ -92,8 +95,8 @@ export const SearchModalContent = () => {
   useEffect(() => {
     setStep(0);
   }, [setStep]);
-  
-  
+
+
   return (
     <div>
       {step === 0 && (

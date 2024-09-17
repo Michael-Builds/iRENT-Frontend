@@ -9,7 +9,7 @@ const Layout = ({ children }) => {
     return (
         <div className="flex flex-col h-screen font-nunito">
             <header className="sticky top-0 z-50 bg-white shadow-md">
-                <Navbar />
+                    <Navbar />
             </header>
             <main className="flex-1 w-full h-screen overflow-y-auto">
                 {children}

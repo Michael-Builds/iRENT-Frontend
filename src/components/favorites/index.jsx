@@ -1,14 +1,16 @@
 import React from 'react'
-import Landing from './Landing'
 import ErrorBoundary from '../ErrorBoundary'
 import Layout from '../layout/Layout'
+import FavoritesPage from './Favorite'
 
-export const Home = () => {
+const Favorites = () => {
     return (
         <ErrorBoundary>
             <Layout>
-                <Landing />
+              <FavoritesPage/>
             </Layout>
         </ErrorBoundary>
     )
 }
+
+export default Favorites

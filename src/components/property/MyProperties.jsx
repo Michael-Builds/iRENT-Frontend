@@ -2,15 +2,27 @@ import React, { useEffect, useState } from 'react'
 import { useMainState } from '../context/StateContext';
 import ListingCard from '../ListingCard';
 import DefaultAvatar from "../../assets/images/avatar.png";
+import { Loader } from '../animation/loader';
+import { property_url } from '../../utils/Endpoint';
 
 const MyProperties = () => {
-    const { properties, fetchProperties, fetchViewings, selectedTown, currentUser } = useMainState();
+    const { properties, favorites, fetchProperties, fetchFavorites, selectedTown, currentUser, loadingId, setLoading, setLoadingId } = useMainState();
     const [userProperties, setUserProperties] = useState([]);
+    const [isFetchingProperties, setIsFetchingProperties] = useState(true);
 
+
+    // Fetch properties when the component is mounted
     useEffect(() => {
-        fetchProperties();
-        fetchViewings();
+        const fetchData = async () => {
+            setIsFetchingProperties(true);
+            await fetchProperties();
+            await fetchFavorites();
+            setIsFetchingProperties(false);
+        };
+
+        if (currentUser) fetchData();
     }, [currentUser]);
+
 
     useEffect(() => {
         if (properties && currentUser) {
@@ -23,30 +35,38 @@ const MyProperties = () => {
         }
     }, [properties, currentUser, selectedTown]);
 
+
     const handleRemoveListing = async (propertyId) => {
+        setLoading(true);
+        setLoadingId(propertyId);
         try {
-            await axios.delete(`${property_url}/remove-property/${propertyId}`, {
+            await api.delete(`${property_url}/remove-property/${propertyId}`, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('accessToken')}`
                 }
             });
             toast.success("Property Removed Successfully");
-            fetchProperties();
+            await fetchProperties();
         } catch (error) {
             console.error('Error removing property:', error);
             toast.error("Error Removing Property");
+        } finally {
+            setLoading(false);
+            setLoadingId(null);
         }
     };
 
     return (
         <div className="h-screen w-full bg-gray-100 p-4 pt-8">
             <div className="flex flex-wrap gap-8 justify-center">
-                {userProperties.length > 0 ? (
+                {isFetchingProperties ? (
+                    <Loader />
+                ) : userProperties.length > 0 ? (
                     userProperties.map((property) => (
                         <ListingCard
                             key={property._id}
                             id={property._id}
-                            images={property.images.map(img => img.url)}
+                            images={property.images.map((img) => img.url)}
                             category={property.category}
                             username={property.createdBy.firstname}
                             description={property.description}
@@ -54,12 +74,13 @@ const MyProperties = () => {
                             avatar={property.createdBy?.avatar.url || DefaultAvatar}
                             price={property.price}
                             address={property.address}
-                            isFavorited={false}
                             location={property.location}
                             onRemoveListing={handleRemoveListing}
                             showRemoveButton={true}
-                            className="h-[590px]"
-                            ctaButton={"Remove Property"}
+                            isFavorited={favorites.includes(property._id)}
+                            className="h-[550px]"
+                            ctaButton={'Remove Property'}
+                            loading={loadingId === property._id}
                         />
                     ))
                 ) : (

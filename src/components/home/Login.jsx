@@ -34,11 +34,14 @@ export const LoginForm = () => {
         if (!validateFields()) return;
 
         try {
-            await login({ email, password }, rememberMe);
-            toast.success("Logged in successfully!", { duration: 4000, position: "top-right" });
-            closeModal();
+            const success = await login({ email, password }, rememberMe);
+            if (success) {
+                toast.success("Logged in successfully!", { duration: 4000, position: "top-right" });
+                closeModal();
+            }
         } catch (error) {
-            toast.error("Login failed. Please try again.", { duration: 4000, position: "top-right" });
+            // Display the error message received from the `login` function
+            toast.error(error.message, { duration: 4000, position: "top-right" });
         }
     };
 

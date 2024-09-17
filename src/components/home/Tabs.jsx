@@ -48,7 +48,7 @@ const Tabs = () => {
     }, []);
 
     return (
-        <div className="relative w-full select-none bg-white border-t-[1.5px] border-gray-200 px-5 py-3 flex items-center justify-between">
+        <div className="relative w-full select-none bg-white border-t-[1.5px] border-gray-200 max-sm:px-3 px-5 max-sm:py-1 py-3 flex items-center justify-between">
             {/* Left Arrow */}
             <ArrowButton
                 direction="left"
@@ -92,7 +92,7 @@ const Tabs = () => {
 function TownItem({ town, onClick, isSelected }) {
     return (
         <button
-            className={`inline-block m-1.5 rounded-full text-center p-2 min-w-[120px] mx-2 transition-all duration-300 ease-in-out ${isSelected
+            className={`inline-block m-1.5 rounded-full text-center p-2 max-sm:min-w-[130px] min-w-[120px] mx-2 transition-all duration-300 ease-in-out ${isSelected
                 ? 'bg-[#d57107] text-white'
                 : 'bg-gray-200 hover:bg-gray-300'
                 }`}

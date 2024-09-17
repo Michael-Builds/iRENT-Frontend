@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { MdFavorite, MdFavoriteBorder } from 'react-icons/md';
 import { MdKeyboardArrowRight, MdKeyboardArrowLeft } from 'react-icons/md';
 import { useMainState } from './context/StateContext';
+import { Circles } from 'react-loader-spinner';
 
 const ListingCard = ({
     images,
@@ -18,7 +19,8 @@ const ListingCard = ({
     onRemoveListing,
     showRemoveButton,
     className = "",
-    ctaButton
+    ctaButton,
+    loading
 }) => {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const { toggleFavorite, setSelectedListing, navigate } = useMainState();
@@ -43,7 +45,7 @@ const ListingCard = ({
         // <div className="bg-white rounded-lg shadow-lg overflow-hidden w-[340px]  cursor-pointer">
         <div className={`bg-white rounded-lg shadow-lg overflow-hidden w-[340px] cursor-pointer ${className}`}>
             {/* Image Carousel */}
-            <div className="relative w-full h-[60%] overflow-hidden">
+            <div className="relative w-full h-[300px] overflow-hidden">
                 <img
                     src={images[currentImageIndex]}
                     alt="Listing"
@@ -88,7 +90,7 @@ const ListingCard = ({
             </div>
 
             {/* Card Details */}
-            <div className="p-4 hover:shadow-xl hover:bg-gray-100 border transition-all duration-300" onClick={handleCardClick}>
+            <div className="p-4 transition-all duration-300" >
                 <div className="flex items-center gap-2">
                     <div className="bg-gray-200 w-8 h-8 rounded-full overflow-hidden">
                         <img src={avatar} alt="User" className="w-full h-full object-cover" />
@@ -119,7 +121,7 @@ const ListingCard = ({
                     <p className="mt-2 text-gray-700 font-semibold text-sm">Location: {location}</p>
                 </div>
 
-                <div className='mt-2 flex justify-center items-center space-x-2 text-[#d57107] hover:text-[#b35e08] hover:underline transition-all duration-300 ease-in-out cursor-pointer'>
+                <div onClick={handleCardClick} className='mt-2 flex justify-center items-center space-x-2 text-[#d57107] hover:text-[#b35e08] hover:underline transition-all duration-300 ease-in-out cursor-pointer'>
                     <span className="font-semibold text-sm">View Detail</span>
                     <svg className="w-4 h-4 transform transition-transform duration-300 ease-in-out group-hover:translate-x-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
@@ -131,7 +133,18 @@ const ListingCard = ({
                         className="mt-2 text-sm w-full py-[7px] bg-[#d57107] hover:bg-[#b85e06] transition-all duration-300 ease-in-out text-white rounded-full"
                         onClick={() => onRemoveListing(id)}
                     >
-                        {ctaButton}
+                        {loading ? (
+                            <div className="flex justify-center items-center">
+                                <Circles
+                                    height="20"
+                                    width="20"
+                                    color="#fff"
+                                    ariaLabel="loading"
+                                />
+                            </div>
+                        ) : (
+                            ctaButton
+                        )}
                     </button>
                 )}
             </div>
