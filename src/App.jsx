@@ -5,6 +5,7 @@ import Favorites from './components/favorites/index.jsx';
 import { Home } from './components/home';
 import Properties from './components/property/index.jsx';
 import { AllViewings, ViewingRequests } from './components/viewing/index.jsx';
+import { Analytics } from "@vercel/analytics/react"
 
 const App = () => {
   return (
@@ -17,6 +18,7 @@ const App = () => {
           <Route path="/my-properties" element={<Properties />} />
           <Route path="/viewing-requests" element={<ViewingRequests />} />
           <Route path="/favorites" element={<Favorites />} />
+          <Analytics />
         </Routes>
       </MainContextProvider>
     </Router>
