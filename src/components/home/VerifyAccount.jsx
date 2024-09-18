@@ -4,7 +4,7 @@ import { useMainState } from '../context/StateContext';
 import { Circles } from 'react-loader-spinner';
 import { auth } from '../../utils/Endpoint';
 import toast from 'react-hot-toast';
-import axios from 'axios';
+import api from '../../utils/api';
 
 export const VerifyAccount = () => {
     const [otp, setOtp] = useState('');
@@ -19,7 +19,7 @@ export const VerifyAccount = () => {
 
         setLoading(true);
         try {
-            const res = await axios.post(`${auth}/account-activate`, {
+            const res = await api.post(`${auth}/account-activate`, {
                 activation_token: activationToken,
                 activation_code: otp,
             });
