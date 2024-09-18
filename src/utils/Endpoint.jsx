@@ -1,4 +1,4 @@
-export const domain = process.env.NODE_ENV !== 'production' ? "http://192.168.1.110:7000" : "http://192.168.1.110:7000";
+export const domain = process.env.NODE_ENV === 'production' ? "http://irent-services.com" : "http://localhost:7000";
 
 export const auth = `${domain}/auth/api`;
 
