@@ -1,8 +1,9 @@
+export const domain = process.env.NODE_ENV === 'production' ? "https://irent-backend.onrender.com" : "http://localhost:7000";
 
-export const auth = `https://irent-backend.onrender.com/auth/api`;
+export const auth = `${domain}/auth/api`;
 
-export const property_url = `https://irent-backend.onrender.com/property/api`
+export const property_url = `${domain}/property/api`
 
-export const favorites_url = `https://irent-backend.onrender.com/favorites/api`
+export const favorites_url = `${domain}/favorites/api`
 
-export const viewing_url = `https://irent-backend.onrender.com/viewing/api`
+export const viewing_url = `${domain}/viewing/api`
