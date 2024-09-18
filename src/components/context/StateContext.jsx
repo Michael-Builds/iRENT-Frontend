@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import api from "../../utils/api";
-import { auth, favorites_ul, property_url, viewing_url } from "../../utils/Endpoint";
+import { auth, favorites_url, property_url, viewing_url } from "../../utils/Endpoint";
 
 export const AuthContext = createContext();
 
@@ -181,7 +181,7 @@ export const MainContextProvider = ({ children }) => {
     // Function to toggle favorites
     const toggleFavorite = async (propertyId) => {
         try {
-            const res = await api.post(`${favorites_ul}/toggle-favorites`, { propertyId });
+            const res = await api.post(`${favorites_url}/toggle-favorites`, { propertyId });
             if (res.data.message.includes("added")) {
                 setFavorites(prev => [...prev, propertyId]);
                 toast.success("Added to favorites");
