@@ -42,6 +42,8 @@ export const MainContextProvider = ({ children }) => {
         }
     };
 
+    
+
     // Function to create viewing request
     const createViewingRequest = async (propertyId, viewingType, preferredDate) => {
         try {
