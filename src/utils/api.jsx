@@ -1,9 +1,9 @@
 import axios from 'axios';
-import { auth, domain } from './Endpoint';
+import { auth } from './Endpoint';
 import { logoutUser } from './auth';
 
 const api = axios.create({
-    baseURL: domain,
+    baseURL: "https://irent-backend.onrender.com",
     withCredentials: true,
 });
 
