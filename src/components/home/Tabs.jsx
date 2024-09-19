@@ -48,7 +48,7 @@ const Tabs = () => {
     }, []);
 
     return (
-        <div className="relative w-full select-none bg-white border-t-[1.5px] border-gray-200 max-sm:px-3 px-5 max-sm:py-1 py-3 flex items-center justify-between">
+        <div className="relative w-full select-none bg-white border-t-[1.5px] border-gray-200 max-sm:px-1 px-5 max-sm:py-1 py-3 flex items-center justify-between ">
             {/* Left Arrow */}
             <ArrowButton
                 direction="left"
@@ -57,10 +57,10 @@ const Tabs = () => {
             />
 
             {/* Scrollable Towns */}
-            <div className="flex-1 overflow-hidden mx-5" style={{ width: '80%' }}>
+            <div className="flex-1 overflow-hidden mx-5 max-sm:mx-2" style={{ width: '80%' }}>
                 <div
                     ref={scrollContainerRef}
-                    className="flex overflow-x-auto whitespace-nowrap scrollbar-hide"
+                    className="flex overflow-x-auto whitespace-nowrap scrollbar-hide "
                     style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                 >
                     <TownItem
