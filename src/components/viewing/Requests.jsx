@@ -23,7 +23,9 @@ const ViewingRequests = () => {
             const response = await api.put(`${viewing_url}/viewings/${requestId}/accept`);
             if (response.data.success) {
                 toast.success("Request accepted successfully!");
-                fetchOwnerViewings();
+                await fetchOwnerViewings();
+            } else {
+                toast.error("Failed to accept request. Please try again.");
             }
         } catch (error) {
             console.error("Error accepting request:", error);
@@ -40,7 +42,9 @@ const ViewingRequests = () => {
             const response = await api.put(`${viewing_url}/viewings/${requestId}/reject`);
             if (response.data.success) {
                 toast.success("Request rejected successfully!");
-                fetchOwnerViewings();
+                await fetchOwnerViewings();
+            } else {
+                toast.error("Failed to reject request. Please try again.");
             }
         } catch (error) {
             console.error("Error rejecting request:", error);
@@ -51,12 +55,6 @@ const ViewingRequests = () => {
     };
 
     useEffect(() => {
-        if (currentUser) {
-            fetchOwnerViewings();
-        }
-    }, [currentUser]);
-
-    useEffect(() => {
         if (ownerViewings) {
             const filtered = ownerViewings.filter(viewing =>
                 !selectedTown || viewing.property.location === selectedTown.name
@@ -64,6 +62,7 @@ const ViewingRequests = () => {
             setFilteredViewings(filtered);
         }
     }, [ownerViewings, selectedTown]);
+
 
     return (
         <div className="h-screen w-full bg-gray-100 p-4 pt-8">

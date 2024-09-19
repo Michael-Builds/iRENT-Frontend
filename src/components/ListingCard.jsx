@@ -132,6 +132,7 @@ const ListingCard = ({
                     <button
                         className="mt-2 text-sm w-full py-[7px] bg-[#d57107] hover:bg-[#b85e06] transition-all duration-300 ease-in-out text-white rounded-full"
                         onClick={() => onRemoveListing(id)}
+                        disabled={loading} 
                     >
                         {loading ? (
                             <div className="flex justify-center items-center">

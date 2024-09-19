@@ -56,7 +56,7 @@ export const MainContextProvider = ({ children }) => {
 
             toast.success("Viewing request created!", { duration: 4000 });
             setViewings(prev => [...prev, res.data.viewing]);
-            console.log("Viewing request", res.data.viewing)
+            await fetchViewings()
             return res.data.viewing
         } catch (error) {
             toast.error("Error creating viewing request.", { duration: 4000 });
@@ -69,10 +69,13 @@ export const MainContextProvider = ({ children }) => {
     // Function to fetch all user's viewing requests
     const fetchViewings = async () => {
         try {
+            setLoading(true);
             const res = await api.get(`${viewing_url}/get-viewings`);
             setViewings(res.data.viewings);
         } catch (error) {
             console.error("Error fetching viewings:", error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -93,8 +96,8 @@ export const MainContextProvider = ({ children }) => {
 
     // Fetch user information
     const fetchUserInfo = async () => {
-        setLoading(true);
         try {
+            setLoading(true);
             const res = await api.get(`${auth}/user-info`);
             setUserInfo(res.data.user);
         } catch (error) {
@@ -125,7 +128,7 @@ export const MainContextProvider = ({ children }) => {
             }
 
             await fetchUserInfo();
-            return true;
+            return res.data;
         } catch (error) {
             console.error("Login error:", error);
 
@@ -148,8 +151,9 @@ export const MainContextProvider = ({ children }) => {
 
     // Function to fetch properties
     const fetchProperties = async () => {
-        setLoading(true);
         try {
+            setLoading(true);
+
             const res = await api.get(`${property_url}/get-properties`);
             setProperties(res.data.properties);
         } catch (error) {

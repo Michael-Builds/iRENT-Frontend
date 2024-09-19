@@ -17,7 +17,6 @@ const ViewForm = ({ propertyId }) => {
     ];
 
     const handleSubmit = async () => {
-
         setLoading(true)
         if (!currentUser) {
             openModal("LOGIN");

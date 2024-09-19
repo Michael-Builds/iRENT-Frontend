@@ -1,45 +1,43 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react';
 import { useMainState } from '../context/StateContext';
-import { PendingViewings, ViewedViewings } from "./Categories"
 import api from '../../utils/api';
 import { viewing_url } from '../../utils/Endpoint';
 import toast from 'react-hot-toast';
 import { Loader } from '../animation/loader';
+import DefaultAvatar from '../../assets/images/avatar.png';
+import ListingCard from '../ListingCard';
 
 const Viewing = () => {
     const { viewings, currentUser, fetchViewings, favorites, loadingId, setLoadingId, toggleFavorite, selectedTown, setLoading, loading } = useMainState();
     const [activeTab, setActiveTab] = useState('pending');
-    const [isFetchingViewings, setIsFetchingViewings] = useState(true);
+    const [localViewings, setLocalViewings] = useState([]);
 
     useEffect(() => {
-        const fetchData = async () => {
-            setIsFetchingViewings(true);
-            await fetchViewings();
-            setIsFetchingViewings(false);
-        };
-
-        if (currentUser) fetchData();
+        if (currentUser) {
+            fetchViewings();
+        }
     }, [currentUser]);
 
+    useEffect(() => {
+        setLocalViewings(viewings);
+    }, [viewings]);
 
     const currentDate = new Date();
 
-    // Filter viewings based on the active tab (pending or viewed) and selected town
-    const filteredViewings = viewings.filter(viewing => {
+    const filteredViewings = localViewings.filter(viewing => {
         const isPending = new Date(viewing.preferredDate) >= currentDate;
         const matchesTown = !selectedTown || viewing.property.location === selectedTown.name;
-
         return activeTab === 'pending' ? isPending && matchesTown : !isPending && matchesTown;
     });
 
-    // Handle removing a viewing
     const handleRemoveViewing = async (viewingId) => {
         setLoading(true);
         setLoadingId(viewingId);
         try {
             await api.delete(`${viewing_url}/viewings/${viewingId}`);
             toast.success('Viewing removed successfully');
-            await fetchViewings();  // Refetch viewings after deletion
+            setLocalViewings(prevViewings => prevViewings.filter(viewing => viewing._id !== viewingId));
+            await fetchViewings();
         } catch (error) {
             console.error('Error removing viewing:', error);
             toast.error('Error removing viewing');
@@ -48,7 +46,6 @@ const Viewing = () => {
             setLoadingId(null);
         }
     };
-
 
     return (
         <div className="h-screen w-full bg-gray-100 p-4 pt-3">
@@ -69,10 +66,9 @@ const Viewing = () => {
                 </button>
             </div>
 
-
             <div className='-mt-12'>
                 {activeTab === 'pending' ? (
-                    isFetchingViewings ? (
+                    loading ? (
                         <Loader />
                     ) : filteredViewings.length === 0 ? (
                         <div className="flex flex-col mt-[15%] items-center justify-center p-8">
@@ -92,7 +88,54 @@ const Viewing = () => {
                 )}
             </div>
         </div>
-    )
-}
+    );
+};
 
-export default Viewing
+const PendingViewings = ({ filteredViewings, favorites, toggleFavorite, handleRemoveViewing, loading }) => (
+    <div className="flex flex-wrap gap-8 justify-center">
+        {filteredViewings.length > 0 ? (
+            filteredViewings.map((viewing) => {
+                const property = viewing.property || {};
+                const images = property.images || [];
+                const createdBy = property.createdBy || {};
+
+                return (
+                    <ListingCard
+                        key={property._id || viewing._id}
+                        id={property._id}
+                        images={images.map((img) => img.url)}
+                        category={property.category}
+                        username={createdBy.firstname}
+                        description={property.description}
+                        availability={property.availability}
+                        avatar={createdBy.avatar?.url || DefaultAvatar}
+                        price={property.price}
+                        address={property.address}
+                        isFavorited={favorites.includes(property._id)}
+                        location={property.location}
+                        onFavoriteToggle={() => toggleFavorite(property._id)}
+                        onRemoveListing={() => handleRemoveViewing(viewing._id)}
+                        showRemoveButton={true}
+                        className="h-[540px]"
+                        ctaButton={"Cancel Viewing"}
+                        loading={loading === viewing._id}
+                    />
+                );
+            })
+        ) : (
+            <div className="flex flex-col mt-[15%] items-center justify-center p-8">
+                <p className="text-lg">No pending viewings available.</p>
+            </div>
+        )}
+    </div>
+);
+
+const ViewedViewings = () => {
+    return (
+        <div className="flex flex-col mt-[15%] items-center justify-center p-8">
+            <p className="text-lg">No viewed items available.</p>
+        </div>
+    );
+};
+
+export default Viewing;

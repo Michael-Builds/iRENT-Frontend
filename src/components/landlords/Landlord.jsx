@@ -48,7 +48,7 @@ const Landlord = () => {
             toast.error("Error occurred. Please try again.", { duration: 4000, position: "top-right" });
             console.error("Error updating role:", error);
         } finally {
-            setLoading(false); // Ensure loading is reset
+            setLoading(false);
         }
     };
 

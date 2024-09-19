@@ -17,7 +17,7 @@ const AddProperty = () => {
         setLoading,
         loading,
         closeModal,
-        fetchUserInfo
+        fetchProperties
     } = useMainState();
 
     const [address, setAddress] = useState('');
@@ -127,7 +127,6 @@ const AddProperty = () => {
                 duration: 4000,
                 position: 'top-right',
             });
-
             // Reset form after successful submission
             setAddress('');
             setAvailability('Available');
@@ -140,7 +139,8 @@ const AddProperty = () => {
             setYearBuilt('');
             setPhone('');
             closeModal();
-            await fetchUserInfo();
+            await fetchProperties();
+            return res.data;
         } catch (error) {
             if (error.response && error.response.status === 401) {
                 toast.error('Unauthorized. Please login again.', {
