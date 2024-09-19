@@ -7,6 +7,13 @@ const api = axios.create({
     withCredentials: true,
 });
 
+// Helper to store token
+const storeAccessToken = (token) => {
+    if (token) {
+        localStorage.setItem('accessToken', token);
+    }
+};
+
 // Attach token to each request
 api.interceptors.request.use(
     (config) => {
@@ -43,13 +50,13 @@ api.interceptors.response.use(
 
                 // Get new access token
                 const { accessToken } = refreshResponse.data;
-                localStorage.setItem('accessToken', accessToken);
-
+                storeAccessToken(accessToken);
                 // Retry the failed request with the new access token
                 originalRequest.headers['Authorization'] = `Bearer ${accessToken}`;
-                return api(originalRequest);  // Retry original request
+                
+                return api(originalRequest);  
             } catch (refreshError) {
-                logoutUser();  // Logout if refresh fails
+                logoutUser(); 
                 return Promise.reject(refreshError);
             }
         }

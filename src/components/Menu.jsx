@@ -4,10 +4,11 @@ import { useMainState } from "./context/StateContext";
 import DefaultAvatar from "../assets/images/avatar.png";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faPlus, faList, faEye,
-  faUserPlus, faUserMinus,
+  faPlus, faList,
+  faEye, faUserPlus,
   faBell, faSignOutAlt,
-  faSignInAlt, faUser, faHeart
+  faSignInAlt, faUser,
+  faHeart
 } from '@fortawesome/free-solid-svg-icons';
 
 export const Menu = () => {
@@ -16,7 +17,7 @@ export const Menu = () => {
 
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
 
-  const userAvatar = currentUser?.avatar || DefaultAvatar;
+  const userAvatar = currentUser?.avatar.url || DefaultAvatar;
   const userName = currentUser ? `${currentUser.firstname} ${currentUser.lastname}` : "User Name";
   const userRole = currentUser?.role || "Role";
 
