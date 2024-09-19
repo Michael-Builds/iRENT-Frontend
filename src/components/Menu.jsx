@@ -17,7 +17,7 @@ export const Menu = () => {
 
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
 
-  const userAvatar = currentUser?.avatar.url || DefaultAvatar;
+  const userAvatar = currentUser?.avatar?.url || DefaultAvatar;
   const userName = currentUser ? `${currentUser.firstname} ${currentUser.lastname}` : "User Name";
   const userRole = currentUser?.role || "Role";
 
