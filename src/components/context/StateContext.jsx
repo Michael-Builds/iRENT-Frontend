@@ -40,7 +40,7 @@ export const MainContextProvider = ({ children }) => {
 
     const handleApiError = (error, defaultMessage) => {
         console.error(error);
-        toast.error(defaultMessage || "An error occurred.");
+        // toast.error(defaultMessage || "An error occurred.");
     };
 
     const updateTokenAndRetry = async (refreshToken) => {
@@ -128,7 +128,8 @@ export const MainContextProvider = ({ children }) => {
             const res = await api.get(`${auth}/user-info`);
             setUserInfo(res.data.user);
         } catch (error) {
-            handleApiError(error, "Error fetching user info");
+            console.log(error.message)
+            // handleApiError(error, "Error fetching user info");
         } finally {
             setLoading(false);
         }
@@ -189,6 +190,9 @@ export const MainContextProvider = ({ children }) => {
     // Action Functions
     const createViewingRequest = async (propertyId, viewingType, preferredDate) => {
         try {
+            if (!currentUser) {
+                openModal("LOGIN")
+            }
             setLoading(true);
             const res = await api.post(`${viewing_url}/create-viewing`, { propertyId, viewingType, preferredDate });
             toast.success("Viewing request created!", { duration: 4000 });
@@ -203,6 +207,9 @@ export const MainContextProvider = ({ children }) => {
 
     const toggleFavorite = async (propertyId) => {
         try {
+            if (!currentUser) {
+                openModal("LOGIN")
+            }
             const res = await api.post(`${favorites_url}/toggle-favorites`, { propertyId });
             if (res.data.message.includes("added")) {
                 setFavorites((prev) => [...prev, propertyId]);
