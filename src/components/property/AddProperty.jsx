@@ -8,6 +8,7 @@ import { useMainState } from '../context/StateContext';
 import { Input } from '../inputs/Input';
 import { CustomSelect } from '../inputs/Select';
 import { Textarea } from '../inputs/TextArea';
+import api from '../../utils/api';
 
 const AddProperty = () => {
     const {
@@ -115,7 +116,7 @@ const AddProperty = () => {
             images.forEach((image) => formData.append('images', image));
 
             // API call to create property
-            const res = await axios.post(`${property_url}/add-property`, formData, {
+            const res = await api.post(`${property_url}/add-property`, formData, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                     'Content-Type': 'multipart/form-data',

@@ -201,7 +201,7 @@ export const MainContextProvider = ({ children }) => {
     // Function to fetch favorites
     const fetchFavorites = async () => {
         try {
-            const res = await api.get(`${favorites_ul}/get-favorites`);
+            const res = await api.get(`${favorites_url}/get-favorites`);
             const favoriteIds = res.data.favorites.map(fav => fav.property._id);
             setFavorites(favoriteIds);
         } catch (error) {
